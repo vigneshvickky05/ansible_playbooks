@@ -1,0 +1,12 @@
+---
+- name: Manage MySQL Service
+  hosts: server1
+  become: yes
+  tasks:
+    - name: Check MySQL status
+      ansible.builtin.service_facts:
+
+    - name: Toggle MySQL service
+      ansible.builtin.service:
+        name: mysql
+        state: "{{ 'stopped' if ansible_facts.services['mysql'].state == 'running' else 'started' }}"

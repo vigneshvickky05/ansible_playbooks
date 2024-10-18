@@ -1,6 +1,6 @@
 ---
 - name: Manage MySQL Service
-  hosts: server1
+  hosts: 172.19.81.174
   become: yes
   tasks:
     - name: Check MySQL status

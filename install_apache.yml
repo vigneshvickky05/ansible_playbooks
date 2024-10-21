@@ -1,0 +1,19 @@
+---
+- name: Install and Start Apache
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: Update the local package cache
+      apt:
+        update_cache: yes
+
+    - name: Install Apache webserver
+      apt:
+        name: apache2
+        state: present
+
+    - name: Start Apache service
+      service:
+        name: apache2
+        state: started
+        enabled: yes

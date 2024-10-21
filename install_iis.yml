@@ -1,6 +1,6 @@
 ---
 - name: Install IIS on Windows
-  hosts: <your_windows_host>
+  hosts: 172.19.80.236
   tasks:
     - name: Install IIS
       win_feature:

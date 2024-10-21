@@ -6,7 +6,9 @@
     - name: Test sudo access
       ansible.builtin.command: sudo whoami
       register: sudo_test
-
+      args:
+        timeout: 30  # Set a timeout to prevent hanging
+        
     - name: Output sudo test result
       debug:
         var: sudo_test

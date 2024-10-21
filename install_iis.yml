@@ -1,6 +1,6 @@
 ---
 - name: Install IIS on Windows
-  hosts: 172.19.80.236
+  hosts: windows  # Target the Windows group
   tasks:
     - name: Install IIS
       win_feature:
@@ -10,5 +10,4 @@
     - name: Start IIS service
       win_service:
         name: W3Svc
-        start: started
-        state: started
+        state: started  # Just use 'state' to start the service

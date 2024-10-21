@@ -1,6 +1,6 @@
 ---
 - name: Install IIS on Windows
-  hosts: windows  # Target the Windows group
+  hosts: 172.19.80.236  # Target the Windows group
   tasks:
     - name: Install IIS
       win_feature:

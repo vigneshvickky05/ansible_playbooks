@@ -4,16 +4,17 @@
   become: yes
   tasks:
     - name: Update the local package cache
-      apt:
+      ansible.builtin.apt:
         update_cache: yes
 
     - name: Install Apache webserver
-      apt:
+      ansible.builtin.apt:
         name: apache2
         state: present
 
     - name: Start Apache service
-      service:
+      ansible.builtin.service:
         name: apache2
         state: started
         enabled: yes
+

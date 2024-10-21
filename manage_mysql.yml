@@ -1,5 +1,5 @@
 ---
-- name: Test connectivity and permissions
+- name: Manage MySQL Service
   hosts: ims_get3@172.19.81.174
   become: yes
   tasks:
@@ -10,12 +10,7 @@
     - name: Output sudo test result
       debug:
         var: sudo_test
-
----
-- name: Manage MySQL Service
-  hosts: ims_get3@172.19.81.174
-  become: yes
-  tasks:
+        
     - name: Attempt to restart MySQL service
       ansible.builtin.command: sudo systemctl restart mysql
       register: mysql_restart
@@ -25,11 +20,6 @@
       debug:
         var: mysql_restart
 
----
-- name: Manage MySQL Service
-  hosts: ims_get3@172.19.81.174
-  become: yes
-  tasks:
     - name: Gather service facts
       ansible.builtin.service_facts:
 

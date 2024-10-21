@@ -3,42 +3,30 @@
   hosts: ims_get3@172.19.81.174
   become: yes
   tasks:
-    - name: Gather service facts
+    - name: Gather MySQL service facts
       ansible.builtin.service_facts:
-
-    - name: Display MySQL service state
-      debug:
-        msg: "MySQL service is currently {{ ansible_facts.services['mysql'].state }}"
-
-    - name: Toggle MySQL service
+ 
+    - name: Start MySQL service if it's stopped
       ansible.builtin.service:
         name: mysql
-        state: "{{ 'stopped' if ansible_facts.services['mysql'].state == 'running' else 'started' }}"
-      register: service_toggle
-
-    - name: Output result of service toggle
+        state: started
+      when: 'mysql' in ansible_facts.services and ansible_facts.services['mysql'].state == 'stopped'
+      register: start_result
+ 
+    - name: Stop MySQL service if it's running
+      ansible.builtin.service:
+        name: mysql
+        state: stopped
+      when: 'mysql' in ansible_facts.services and ansible_facts.services['mysql'].state == 'running'
+      register: stop_result
+ 
+    - name: Report result of starting/stopping MySQL
       debug:
-        var: service_toggle
-
-    - name: Test sudo access
-      ansible.builtin.command: sudo whoami
-      register: sudo_test
-        
-    - name: Output sudo test result
-      debug:
-        var: sudo_test
-        
-    - name: Attempt to restart MySQL service
-      ansible.builtin.command: sudo systemctl restart mysql
-      register: mysql_restart
-      ignore_errors: yes
-
-    - name: Debug MySQL restart output
-      debug:
-        var: mysql_restart
-
-    
-
-
-
-
+        msg: >
+          {%- if start_result.changed %}
+            MySQL service has been started.
+          {%- elif stop_result.changed %}
+            MySQL service has been stopped.
+          {%- else %}
+            MySQL service is already in the desired state.
+          {%- endif %}

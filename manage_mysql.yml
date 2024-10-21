@@ -10,3 +10,5 @@
       ansible.builtin.service:
         name: mysql
         state: "{{ 'stopped' if ansible_facts.services['mysql'].state == 'running' else 'started' }}"
+      vars:
+        ansible_become_password: "{{ ansible_become_password }}"

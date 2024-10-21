@@ -1,32 +1,12 @@
 ---
 - name: Manage MySQL Service
-  hosts: ims_get3@172.19.81.174
+  hosts: 172.19.81.174
   become: yes
   tasks:
-    - name: Gather MySQL service facts
+    - name: Check MySQL status
       ansible.builtin.service_facts:
- 
-    - name: Start MySQL service if it's stopped
+
+    - name: Toggle MySQL service
       ansible.builtin.service:
         name: mysql
-        state: started
-      when: 'mysql' in ansible_facts.services and ansible_facts.services['mysql'].state == 'stopped'
-      register: start_result
- 
-    - name: Stop MySQL service if it's running
-      ansible.builtin.service:
-        name: mysql
-        state: stopped
-      when: 'mysql' in ansible_facts.services and ansible_facts.services['mysql'].state == 'running'
-      register: stop_result
- 
-    - name: Report result of starting/stopping MySQL
-      debug:
-        msg: >
-          {%- if start_result.changed %}
-            MySQL service has been started.
-          {%- elif stop_result.changed %}
-            MySQL service has been stopped.
-          {%- else %}
-            MySQL service is already in the desired state.
-          {%- endif %}
+        state: "{{ 'stopped' if ansible_facts.services['mysql'].state == 'running' else 'started' }}"

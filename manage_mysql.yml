@@ -14,11 +14,14 @@
       ansible.builtin.service:
         name: mysql
         state: "{{ 'stopped' if ansible_facts.services['mysql'].state == 'running' else 'started' }}"
-        timeout: 60  # Increase timeout as needed
       register: service_toggle
+      until: service_toggle.changed
+      retries: 5  # Adjust the number of retries as needed
+      delay: 10   # Delay in seconds between retries
 
     - name: Output result of service toggle
       debug:
         var: service_toggle
+
 
 

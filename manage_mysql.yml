@@ -1,28 +1,25 @@
 ---
-- name: Manage MySQL Service
-  hosts: all
+- name: Manage MySQL service
+  hosts: ims_get3@172.19.81.174  # Replace with your target host group or IP
   become: yes
   become_method: sudo
-  become_user: ims_get3
-  vars:
-    ansible_become_password: pass123$
   tasks:
-    - name: Gather facts
+    - name: Gather facts about the system
       setup:
 
-    - name: Check MySQL service status
-      command: systemctl is-active mysql
-      register: mysql_service_status
-      ignore_errors: yes
+    - name: Get the status of MySQL service
+      command: systemctl is-active mysql.service
+      register: mysql_status
+      ignore_errors: yes  # Prevent failure if service is not found
 
-    - name: Start MySQL service
-      systemd:
-        name: mysql
-        state: started
-      when: mysql_service_status.stdout != "active"
-      
-    - name: Ensure MySQL service is running
-      systemd:
-        name: mysql
-        state: started
-      when: mysql_service_status.stdout == "inactive"
+    - name: Start MySQL service if it is not running
+      command: /usr/bin/systemctl start mysql.service
+      when: mysql_status.stdout != 'active'
+
+    - name: Confirm MySQL service is running
+      command: systemctl status mysql.service
+      register: confirm_mysql_status
+
+    - name: Display the status of MySQL service
+      debug:
+        msg: "MySQL service is now {{ confirm_mysql_status.stdout }}"

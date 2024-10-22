@@ -6,16 +6,18 @@
     - name: Gather service facts
       ansible.builtin.service_facts:
 
-    - name: Display MySQL service state
+    - name: Check if MySQL service is present
       debug:
-        msg: "MySQL service is currently {{ ansible_facts.services['mysql'].state }}"
+        msg: "MySQL service is present and currently {{ ansible_facts.services['mysql'].state }}"
+      when: "'mysql' in ansible_facts.services"
 
-    - name: Toggle MySQL service
+    - name: Start MySQL service if stopped
       ansible.builtin.service:
         name: mysql
-        state: "{{ 'stopped' if ansible_facts.services['mysql'].state == 'running' else 'started' }}"
-      register: service_toggle
+        state: started
+      when: ansible_facts.services['mysql'].state != 'running'
 
-    - name: Output result of service toggle
+    - name: Output result of MySQL service status
       debug:
-        var: service_toggle
+        msg: "MySQL service is now {{ ansible_facts.services['mysql'].state }}"
+      when: "'mysql' in ansible_facts.services"

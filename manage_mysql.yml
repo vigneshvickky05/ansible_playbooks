@@ -2,6 +2,7 @@
 - name: Manage MySQL Service
   hosts: ims_get3@172.19.81.174
   become: yes
+  become_user: root
   tasks:
     - name: Gather service facts
       ansible.builtin.service_facts:
@@ -9,26 +10,9 @@
     - name: Check if MySQL service is present
       debug:
         msg: "MySQL service is present and currently {{ ansible_facts.services['mysql'].state }}"
-      when: "'mysql' in ansible_facts.services"
 
     - name: Start MySQL service if stopped
-      ansible.builtin.service:
+      ansible.builtin.systemd:
         name: mysql
         state: started
       when: ansible_facts.services['mysql'].state != 'running'
-
-    - name: Check MySQL service status if failed to start
-      command: systemctl status mysql.service
-      register: mysql_status_output
-      when: ansible_facts.services['mysql'].state != 'running'
-      failed_when: false
-
-    - name: Display MySQL service status output
-      debug:
-        var: mysql_status_output.stdout
-      when: mysql_status_output is defined
-
-    - name: Output final result of MySQL service status
-      debug:
-        msg: "MySQL service is now {{ ansible_facts.services['mysql'].state }}"
-      when: "'mysql' in ansible_facts.services"

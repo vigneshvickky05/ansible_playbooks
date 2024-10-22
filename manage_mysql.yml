@@ -5,16 +5,17 @@
   become_method: sudo
   become_user: ims_get3
   vars:
-    ansible_become_password: "pass123$"
+    ansible_become_password: "qwert1"
   tasks:
-    - name: Gather service facts
-      ansible.builtin.service_facts:
+    - name: Debug service status before starting
+      command: systemctl status mysql
+      register: mysql_status
+      ignore_errors: yes
 
-    - name: Check if MySQL service is present
-      debug:
-        msg: "MySQL service is present and currently {{ ansible_facts.services['mysql'].state }}"
+    - debug:
+        var: mysql_status.stdout_lines
 
-    - name: Start MySQL service if stopped
+    - name: Start MySQL service
       ansible.builtin.systemd:
         name: mysql
         state: started

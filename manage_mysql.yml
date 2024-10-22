@@ -17,7 +17,18 @@
         state: started
       when: ansible_facts.services['mysql'].state != 'running'
 
-    - name: Output result of MySQL service status
+    - name: Check MySQL service status if failed to start
+      command: systemctl status mysql.service
+      register: mysql_status_output
+      when: ansible_facts.services['mysql'].state != 'running'
+      failed_when: false
+
+    - name: Display MySQL service status output
+      debug:
+        var: mysql_status_output.stdout
+      when: mysql_status_output is defined
+
+    - name: Output final result of MySQL service status
       debug:
         msg: "MySQL service is now {{ ansible_facts.services['mysql'].state }}"
       when: "'mysql' in ansible_facts.services"

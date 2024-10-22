@@ -5,7 +5,7 @@
   become_method: sudo
   become_user: ims_get3
   vars:
-    ansible_become_password: "qwert1"
+    ansible_become_password: "pass123$"
   tasks:
     - name: Debug service status before starting
       command: systemctl status mysql

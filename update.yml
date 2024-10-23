@@ -2,6 +2,7 @@
 - name: Test APT Update
   hosts: ims_get3@172.19.81.174
   become: yes
+  become_method: sudo
   tasks:
     - name: Update the local package cache
       ansible.builtin.apt:

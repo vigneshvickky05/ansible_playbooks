@@ -1,8 +1,9 @@
 ---
-- name: Update Ubuntu Packages
-  hosts: all
+- name: Test APT Update
+  hosts: ims_get3@172.19.81.174
   become: yes
   tasks:
-    - name: Run apt update
+    - name: Update the local package cache
       ansible.builtin.apt:
         update_cache: yes
+        cache_valid_time: 3600  # Optional: Adjust time as needed

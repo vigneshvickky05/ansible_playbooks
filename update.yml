@@ -6,4 +6,4 @@
     - name: Update the local package cache
       ansible.builtin.apt:
         update_cache: yes
-        cache_valid_time: 3600  # Optional: Adjust time as needed
+        cache_valid_time: 7200  # Optional: Adjust time as needed

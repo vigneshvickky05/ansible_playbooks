@@ -1,16 +1,14 @@
 ---
-- name: Install and start Apache server
+- name: Install Apache
   hosts: ims_get3@172.19.81.174
-  become: yes  # This allows the tasks to run with sudo privileges
+  become: yes
+  become_method: sudo
   tasks:
+    - name: Update the local package cache
+      ansible.builtin.apt:
+        update_cache: yes
+ 
     - name: Install Apache
       ansible.builtin.apt:
-        name: apache2  # The package name for Apache
-        state: present  # Ensure Apache is installed
-        update_cache: yes  # Update the apt cache before installing
- 
-    - name: Ensure Apache is running
-      ansible.builtin.service:
-        name: apache2  # The service name for Apache
-        state: started  # Ensure the service is started
-        enabled: yes  # Ensure the service starts on boot
+        name: apache2
+        state: present

@@ -8,7 +8,7 @@
     - name: Ensure apt cache is updated
       ansible.builtin.apt:
         update_cache: yes
-        cache_valid_time: 3600  # Cache considered valid for 1 hour
+        cache_valid_time: 7200  # Cache considered valid for 1 hour
  
     - name: Install Apache
       ansible.builtin.apt:

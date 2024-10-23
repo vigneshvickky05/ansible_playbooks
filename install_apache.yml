@@ -4,14 +4,6 @@
   become: yes
   become_method: sudo
   tasks:
-    - name: Wait for any apt/dpkg lock
-      command: "lsof /var/lib/dpkg/lock-frontend"
-      register: lock_check
-      ignore_errors: yes
-      until: lock_check.rc != 0
-      retries: 5
-      delay: 2
- 
     - name: Remove apt lock files if they exist
       file:
         path: "{{ item }}"
@@ -35,10 +27,11 @@
         name: apache2
         state: present
  
-    - name: Ensure the firewall allows HTTP and HTTPS traffic
-      ansible.builtin.ufw:
-        rule: allow
-        name: "{{ item }}"
-      loop:
-        - 'http'
-        - 'https'
+    # Uncomment the following section to manage UFW after resolving the issue
+    # - name: Ensure the firewall allows HTTP and HTTPS traffic
+    #   ansible.builtin.ufw:
+    #     rule: allow
+    #     name: "{{ item }}"
+    #   loop:
+    #     - 'http'
+    #     - 'https'

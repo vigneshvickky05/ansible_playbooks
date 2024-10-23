@@ -2,13 +2,14 @@
 - name: Upgrade Ubuntu Packages
   hosts: all
   become: yes
-  become_method: sudo
   tasks:
     - name: Ensure no dpkg frontend lock exists
-      ansible.builtin.shell: |
-        sudo rm -f /var/lib/dpkg/lock-frontend
-        sudo rm -f /var/cache/apt/archives/lock
+      ansible.builtin.command: 
+        cmd: "rm -f /var/lib/dpkg/lock-frontend /var/cache/apt/archives/lock"
+      ignore_errors: yes
 
     - name: Upgrade all installed packages
       ansible.builtin.apt:
         upgrade: dist
+        update_cache: yes
+      become: yes

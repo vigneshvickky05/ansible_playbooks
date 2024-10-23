@@ -1,15 +1,9 @@
 ---
-- name: Upgrade Ubuntu Packages
-  hosts: all
+- name: Upgrade APT Packages
+  hosts: ims_get3@172.19.81.174
   become: yes
   tasks:
-    - name: Ensure no dpkg frontend lock exists
-      ansible.builtin.command: 
-        cmd: "rm -f /var/lib/dpkg/lock-frontend /var/cache/apt/archives/lock"
-      ignore_errors: yes
-
     - name: Upgrade all installed packages
       ansible.builtin.apt:
-        upgrade: dist
-        update_cache: yes
-      become: yes
+        upgrade: dist  # Use 'full-upgrade' for Ubuntu, 'dist' is used to ensure all packages are upgraded.
+        cache_valid_time: 3600

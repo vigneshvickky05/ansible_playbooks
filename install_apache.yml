@@ -8,6 +8,7 @@
         name: apache2  # The package name for Apache
         state: present  # Ensure Apache is installed
         update_cache: yes  # Update the apt cache before installing
+        cache_valid_time: 3600
  
     - name: Ensure Apache is running
       ansible.builtin.service:

@@ -1,36 +1,44 @@
 ---
-- name: Install and configure Apache
+- name: Install Apache Server
   hosts: ims_get3@172.19.81.174
   become: yes
   become_method: sudo
   tasks:
-    - name: Update the local package cache
+    - name: Wait for any apt/dpkg lock
+      command: "lsof /var/lib/dpkg/lock-frontend"
+      register: lock_check
+      ignore_errors: yes
+      until: lock_check.rc != 0
+      retries: 5
+      delay: 2
+ 
+    - name: Remove apt lock files if they exist
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /var/lib/apt/lists/lock
+        - /var/lib/dpkg/lock-frontend
+        - /var/lib/dpkg/lock
+ 
+    - name: Configure dpkg
+      command: sudo dpkg --configure -a
+      ignore_errors: yes
+ 
+    - name: Update the package cache
       ansible.builtin.apt:
         update_cache: yes
         cache_valid_time: 7200  # Cache is valid for 1 hour
  
-    - name: Install Apache2
+    - name: Install Apache
       ansible.builtin.apt:
         name: apache2
         state: present
  
-    - name: Ensure Apache is started and enabled
-      ansible.builtin.systemd:
-        name: apache2
-        state: started
-        enabled: yes
- 
-    - name: Allow HTTP traffic through the firewall
-      ansible.builtin.command: ufw allow 'Apache'
-      args:
-        warn: false
- 
-    - name: Allow HTTPS traffic through the firewall
-      ansible.builtin.command: ufw allow 'Apache Full'
-      args:
-        warn: false
- 
-    - name: Ensure UFW is enabled
-      ansible.builtin.command: ufw enable
-      args:
-        warn: false
+    - name: Ensure the firewall allows HTTP and HTTPS traffic
+      ansible.builtin.ufw:
+        rule: allow
+        name: "{{ item }}"
+      loop:
+        - 'http'
+        - 'https'

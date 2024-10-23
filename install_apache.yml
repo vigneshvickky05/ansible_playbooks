@@ -1,24 +1,36 @@
 ---
-- name: Install Apache Server
-  hosts: ims_get3@172.19.81.174  # Replace with your inventory
-  become: yes  # Allow the use of sudo without a password due to Polkit rules
+- name: Install and configure Apache
+  hosts: ims_get3@172.19.81.174
+  become: yes
+  become_method: sudo
   tasks:
     - name: Update the local package cache
       ansible.builtin.apt:
         update_cache: yes
+        cache_valid_time: 3600  # Cache is valid for 1 hour
  
     - name: Install Apache2
       ansible.builtin.apt:
         name: apache2
         state: present
  
-    - name: Start the Apache service
-      ansible.builtin.service:
+    - name: Ensure Apache is started and enabled
+      ansible.builtin.systemd:
         name: apache2
         state: started
-        enabled: yes  # Ensure Apache starts on boot
+        enabled: yes
  
-    - name: Ensure the firewall allows HTTP and HTTPS traffic
-      ansible.builtin.ufw:
-        rule: allow
-        name: 'Apache Full'
+    - name: Allow HTTP traffic through the firewall
+      ansible.builtin.command: ufw allow 'Apache'
+      args:
+        warn: false
+ 
+    - name: Allow HTTPS traffic through the firewall
+      ansible.builtin.command: ufw allow 'Apache Full'
+      args:
+        warn: false
+ 
+    - name: Ensure UFW is enabled
+      ansible.builtin.command: ufw enable
+      args:
+        warn: false
